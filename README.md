@@ -24,9 +24,11 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 
 | Module   | Functions                          |
 | -------- | ---------------------------------- |
-| `array`  | `chunk`, `unique`, `groupBy`       |
-| `string` | `capitalize`, `slugify`, `truncate`|
-| `object` | `pick`, `omit`, `isDefined`        |
+| `array`  | `chunk`, `distinct`, `distinctBy`, `lookupBy`, `indexBy` |
+| `string` | `capitalize`, `slugify`, `truncate`                     |
+| `object` | `pick`, `omit`, `isDefined`                             |
+| `sort`   | `sortByKey`                                             |
+| `errors` | `DuplicateKeyError`                                     |
 
 ## Development
 
