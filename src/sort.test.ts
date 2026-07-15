@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { sortByKey, type SortByKeyOptions } from "./sort.js";
+import { compareBy, chainComparators, type CompareByOptions } from "./sort.js";
 
 describe("sort", () => {
 
-  describe("sortByKey", () => {
+  describe("compareBy", () => {
 
     type Row = { id: number; key: string | number | null };
 
@@ -27,7 +27,7 @@ describe("sort", () => {
         ],
         options: {
           order: "desc"
-        } satisfies SortByKeyOptions,
+        } satisfies CompareByOptions,
         expectedIds: [3, 1, 2],
       },
       {
@@ -49,7 +49,7 @@ describe("sort", () => {
         ],
         options: {
           order: "desc"
-        } satisfies SortByKeyOptions,
+        } satisfies CompareByOptions,
         expectedIds: [1, 3, 2],
       },
       {
@@ -71,7 +71,7 @@ describe("sort", () => {
         ],
         options: {
           order: "desc"
-        } satisfies SortByKeyOptions,
+        } satisfies CompareByOptions,
         expectedIds: [1, 3, 2],
       },
       {
@@ -83,7 +83,7 @@ describe("sort", () => {
         ],
         options: {
           nulls: "first"
-        } satisfies SortByKeyOptions,
+        } satisfies CompareByOptions,
         expectedIds: [2, 3, 1],
       },
       {
@@ -96,7 +96,7 @@ describe("sort", () => {
         options: {
           order: "desc",
           nulls: "first"
-        } satisfies SortByKeyOptions,
+        } satisfies CompareByOptions,
         expectedIds: [2, 1, 3],
       },
       {
@@ -122,7 +122,7 @@ describe("sort", () => {
     ] satisfies Array<{
       testCase: string;
       items: Row[];
-      options: SortByKeyOptions;
+      options: CompareByOptions;
       expectedIds: number[];
     }>;
 
@@ -130,7 +130,7 @@ describe("sort", () => {
 
       it(`should return expected order for case '${testCase}'`, () => {
 
-        const result = [...items].sort(sortByKey((item) => item.key, options));
+        const result = [...items].sort(compareBy((item) => item.key, options));
 
         expect(result.map((item) => item.id)).toEqual(expectedIds);
       });
@@ -146,11 +146,55 @@ describe("sort", () => {
       ];
 
       // No explicit generics: the item type flows from `.sort`'s context.
-      const byName = [...people].sort(sortByKey((person) => person.name));
-      const byAgeDesc = [...people].sort(sortByKey((person) => person.age, { order: "desc" }));
+      const byName = [...people].sort(compareBy((person) => person.name));
+      const byAgeDesc = [...people].sort(compareBy((person) => person.age, { order: "desc" }));
 
       expect(byName.map((person) => person.name)).toEqual(["Alice", "Bob", "Charlie"]);
       expect(byAgeDesc.map((person) => person.age)).toEqual([40, 30, 25]);
+    });
+
+  });
+
+  describe("chainComparators", () => {
+
+    const people = [
+      { id: 1, last: "Smith", first: "Bob" },
+      { id: 2, last: "Jones", first: "Alice" },
+      { id: 3, last: "Smith", first: "Alice" },
+      { id: 4, last: "Jones", first: "Bob" },
+    ];
+
+    it("uses the first comparator as primary and later ones to break ties", () => {
+
+      const result = [...people].sort(chainComparators([
+        compareBy((person) => person.last),
+        compareBy((person) => person.first),
+      ]));
+
+      // Jones before Smith; within each last name, Alice before Bob.
+      expect(result.map((person) => person.id)).toEqual([2, 4, 3, 1]);
+    });
+
+    it("swapping the order swaps which key is primary", () => {
+
+      const result = [...people].sort(chainComparators([
+        compareBy((person) => person.first),
+        compareBy((person) => person.last),
+      ]));
+
+      // Alice before Bob; within each first name, Jones before Smith.
+      expect(result.map((person) => person.id)).toEqual([2, 3, 4, 1]);
+    });
+
+    it("honors per-comparator options in the tie-break", () => {
+
+      const result = [...people].sort(chainComparators([
+        compareBy((person) => person.last),
+        compareBy((person) => person.first, { order: "desc" }),
+      ]));
+
+      // Jones before Smith; within each last name, Bob before Alice (desc).
+      expect(result.map((person) => person.id)).toEqual([4, 2, 1, 3]);
     });
 
   });

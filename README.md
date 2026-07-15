@@ -27,7 +27,7 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 | `array`  | `chunk`, `distinct`, `distinctBy`, `lookupBy`, `indexBy` |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
 | `object` | `pick`, `omit`, `isDefined`                             |
-| `sort`   | `sortByKey`                                             |
+| `sort`   | `compareBy`, `chainComparators`                         |
 | `errors` | `DuplicateKeyError`                                     |
 
 ## Development

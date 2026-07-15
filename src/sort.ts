@@ -1,4 +1,4 @@
-export interface SortByKeyOptions {
+export interface CompareByOptions {
   /**
    * Sort direction applied to non-null keys. Items with a `null` key are placed
    * according to `nulls`, unaffected by this option. Defaults to `"asc"`.
@@ -21,13 +21,13 @@ export interface SortByKeyOptions {
  *   `order` option.
  *
  * @example
- * items.sort(sortByKey((item) => item.name));
- * items.sort(sortByKey((item) => item.age, { order: "desc" }));
- * items.sort(sortByKey((item) => item.score, { nulls: "first" }));
+ * items.sort(compareBy((item) => item.name));
+ * items.sort(compareBy((item) => item.age, { order: "desc" }));
+ * items.sort(compareBy((item) => item.score, { nulls: "first" }));
  */
-export function sortByKey<T, K extends string | number>(
+export function compareBy<T, K extends string | number>(
   keyFn: (item: T) => K | null,
-  options: SortByKeyOptions = {},
+  options: CompareByOptions = {},
 ): (a: T, b: T) => number {
   const direction = options.order === "desc" ? -1 : 1;
   const nullRank = options.nulls === "first" ? -1 : 1;
@@ -43,6 +43,29 @@ export function sortByKey<T, K extends string | number>(
     }
 
     return direction * compareKeys(keyA, keyB);
+  };
+}
+
+/**
+ * Combines comparators into a single one that applies them in order, using each
+ * later comparator only to break ties left by the earlier ones. The first
+ * comparator is the primary sort; subsequent ones are tie-breakers.
+ *
+ * @example
+ * items.sort(chainComparators([
+ *   compareBy((item) => item.lastName),  // primary
+ *   compareBy((item) => item.firstName), // tie-break
+ * ]));
+ */
+export function chainComparators<T>(
+  comparators: ReadonlyArray<(a: T, b: T) => number>,
+): (a: T, b: T) => number {
+  return (a, b) => {
+    for (const compare of comparators) {
+      const result = compare(a, b);
+      if (result !== 0) return result;
+    }
+    return 0;
   };
 }
 
