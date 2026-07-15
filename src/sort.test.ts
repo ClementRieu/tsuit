@@ -75,6 +75,31 @@ describe("sort", () => {
         expectedIds: [1, 3, 2],
       },
       {
+        testCase: "nulls first moves null keys to the front",
+        items: [
+          { id: 1, key: "b" },
+          { id: 2, key: null },
+          { id: 3, key: "a" },
+        ],
+        options: {
+          nulls: "first"
+        } satisfies SortByKeyOptions,
+        expectedIds: [2, 3, 1],
+      },
+      {
+        testCase: "nulls first is unaffected by descending order",
+        items: [
+          { id: 1, key: "b" },
+          { id: 2, key: null },
+          { id: 3, key: "a" },
+        ],
+        options: {
+          order: "desc",
+          nulls: "first"
+        } satisfies SortByKeyOptions,
+        expectedIds: [2, 1, 3],
+      },
+      {
         testCase: "null keys keep their relative order",
         items: [
           { id: 1, key: null },
