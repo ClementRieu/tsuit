@@ -2,17 +2,52 @@ import { describe, expect, it } from "vitest";
 import { capitalize, slugify, truncate } from "./string.js";
 
 describe("string", () => {
-  it("capitalize uppercases the first char", () => {
-    expect(capitalize("hello")).toBe("Hello");
-    expect(capitalize("")).toBe("");
+
+  describe("capitalize", () => {
+
+    it("uppercases the first char", () => {
+
+      const result = capitalize("hello");
+
+      const expected = "Hello";
+
+      expect(result).toBe(expected);
+    });
+
+    it("leaves an empty string unchanged", () => {
+      expect(capitalize("")).toBe("");
+    });
+
   });
 
-  it("slugify produces url-friendly slugs", () => {
-    expect(slugify("Héllo, World!")).toBe("hello-world");
+  describe("slugify", () => {
+
+    it("produces url-friendly slugs", () => {
+
+      const result = slugify("Héllo, World!");
+
+      const expected = "hello-world";
+
+      expect(result).toBe(expected);
+    });
+
   });
 
-  it("truncate appends a suffix when cut", () => {
-    expect(truncate("hello world", 8)).toBe("hello w…");
-    expect(truncate("hi", 8)).toBe("hi");
+  describe("truncate", () => {
+
+    it("appends a suffix when cut", () => {
+
+      const result = truncate("hello world", 8);
+
+      const expected = "hello w…";
+
+      expect(result).toBe(expected);
+    });
+
+    it("leaves short strings untouched", () => {
+      expect(truncate("hi", 8)).toBe("hi");
+    });
+
   });
+
 });

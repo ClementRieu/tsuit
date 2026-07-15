@@ -30,6 +30,9 @@ export function slugify(value: string): string {
  * Truncates a string to `maxLength`, appending `suffix` if it was cut.
  */
 export function truncate(value: string, maxLength: number, suffix = "…"): string {
-  if (value.length <= maxLength) return value;
-  return value.slice(0, Math.max(0, maxLength - suffix.length)) + suffix;
+  if (value.length <= maxLength) {
+    return value;
+  }
+  const maxTruncateLength = maxLength - suffix.length;
+  return value.slice(0, Math.max(0, maxTruncateLength)) + suffix;
 }
