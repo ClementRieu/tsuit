@@ -41,7 +41,10 @@ npm run build      # build ESM + CJS + type declarations into dist/
 
 1. Add (or extend) a module in `src/`, e.g. `src/number.ts`.
 2. Export it from `src/index.ts`.
-3. Add tests in `src/index.test.ts` (or a dedicated `*.test.ts`).
+3. Add its tests in a sibling file named after the module, e.g. `src/number.test.ts`.
+
+Each module keeps its tests in a co-located `*.test.ts` file (`array.ts` →
+`array.test.ts`, etc.); vitest picks them up automatically.
 
 ## Publishing
 
