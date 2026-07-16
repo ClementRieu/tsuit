@@ -1,6 +1,7 @@
 # tsuit
 
 A collection of small TypeScript helper functions — zero dependencies, tree-shakeable.
+Claude helped a lot, meaning you all did.
 
 ## Installation
 
@@ -26,7 +27,7 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 | -------- | ---------------------------------- |
 | `array`  | `chunk`, `distinct`, `distinctBy`, `lookupBy`, `indexBy` |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
-| `object` | `pick`, `omit`, `isDefined`                             |
+| `object` | `pick`, `omit`, `isDefined`, `stripUndefined`           |
 | `sort`   | `compareBy`, `chainComparators`                         |
 | `errors` | `DuplicateKeyError`                                     |
 

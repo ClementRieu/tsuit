@@ -43,3 +43,36 @@ export function omit<T extends object, K extends keyof T>(
 export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
 }
+
+/**
+ * The result of {@link stripUndefined}: keys whose value type could be
+ * `undefined` become optional (they may have been stripped) and lose `undefined`
+ * from their type; all other keys are preserved as-is.
+ */
+export type WithoutUndefined<T> =
+  & { [K in keyof T as (undefined extends T[K] ? never : K)]: T[K] }
+  & { [K in keyof T as (undefined extends T[K] ? K : never)]?: Exclude<T[K], undefined> };
+
+/**
+ * Returns a new object without the keys whose value is `undefined`. Keys set to
+ * `null` are kept — only `undefined` is stripped. Shallow: nested objects are
+ * left untouched.
+ *
+ * Keys that could hold `undefined` become optional in the result, reflecting
+ * that they may have been removed.
+ *
+ * @example
+ * stripUndefined({ a: 1, b: undefined, c: null }); // { a: 1, c: null }
+ */
+export function stripUndefined<T extends object>(obj: T): WithoutUndefined<T> {
+
+  const result = {} as Record<PropertyKey, unknown>;
+
+  for (const key of Object.keys(obj) as (keyof T)[]) {
+    if (obj[key] !== undefined) {
+      result[key] = obj[key];
+    }
+  }
+
+  return result as WithoutUndefined<T>;
+}
