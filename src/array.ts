@@ -52,11 +52,11 @@ export function lookupBy<T, K extends PropertyKey>(
 export interface IndexByOptions {
   /**
    * How to handle two items resolving to the same key:
-   * - `"overwrite"` (default): the last item wins.
+   * - `"keep-last"` (default): the last item wins.
    * - `"keep-first"`: the first item wins; later duplicates are ignored.
    * - `"throw"`: throw a {@link DuplicateKeyError} on the first duplicate.
    */
-  onDuplicate?: "overwrite" | "keep-first" | "throw";
+  onDuplicate?: "keep-last" | "keep-first" | "throw";
 }
 
 /**
@@ -70,7 +70,7 @@ export function indexBy<T, K extends PropertyKey>(
   options: IndexByOptions = {},
 ): Record<K, T> {
 
-  const { onDuplicate = "overwrite" } = options;
+  const { onDuplicate = "keep-last" } = options;
 
   // Null-prototype object so keys like "toString" or "__proto__" behave as
   // plain data entries instead of hitting inherited members / the proto setter.
@@ -80,7 +80,7 @@ export function indexBy<T, K extends PropertyKey>(
 
     const key = keyFn(item);
 
-    if (onDuplicate !== "overwrite" && Object.hasOwn(result, key)) {
+    if (onDuplicate !== "keep-last" && Object.hasOwn(result, key)) {
       if (onDuplicate === "throw") {
         throw new DuplicateKeyError(key);
       }

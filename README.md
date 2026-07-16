@@ -1,4 +1,4 @@
-# ts-helpers
+# tsuit
 
 A collection of small, well-typed TypeScript helper functions — zero dependencies, tree-shakeable, and ready to be published as an npm package.
 
@@ -7,13 +7,13 @@ A collection of small, well-typed TypeScript helper functions — zero dependenc
 Once published:
 
 ```bash
-npm install ts-helpers
+npm install tsuit
 ```
 
 ## Usage
 
 ```ts
-import { chunk, slugify, pick } from "ts-helpers";
+import { chunk, slugify, pick } from "tsuit";
 
 chunk([1, 2, 3, 4, 5], 2); // [[1, 2], [3, 4], [5]]
 slugify("Héllo, World!"); // "hello-world"
@@ -57,7 +57,7 @@ npm version patch   # bump the version
 npm publish         # runs the build via prepublishOnly
 ```
 
-> Update the `name` in `package.json` to an available npm name (or a scoped name like `@clementrieu/ts-helpers`) before publishing.
+> Make sure the `name` in `package.json` is available on npm (or use a scoped name like `@clementrieu/tsuit`) before publishing.
 
 ## License
 
