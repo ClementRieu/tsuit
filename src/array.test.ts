@@ -5,10 +5,11 @@ import {
   distinct,
   distinctBy,
   indexBy,
+  single,
   type IndexByOptions,
   type DistinctByOptions,
 } from "./array.js";
-import { DuplicateKeyError } from "./errors.js";
+import { DuplicateKeyError, EmptyArrayError, MultipleElementsError } from "./errors.js";
 
 describe("array", () => {
 
@@ -38,6 +39,22 @@ describe("array", () => {
       const expected = [1, 2, 3];
 
       expect(result).toEqual(expected);
+    });
+
+  });
+
+  describe("single", () => {
+
+    it("returns the only element", () => {
+      expect(single([42])).toBe(42);
+    });
+
+    it("throws EmptyArrayError when the array is empty", () => {
+      expect(() => single([])).toThrow(EmptyArrayError);
+    });
+
+    it("throws MultipleElementsError when there is more than one element", () => {
+      expect(() => single([1, 2])).toThrow(MultipleElementsError);
     });
 
   });

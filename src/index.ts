@@ -3,3 +3,4 @@ export * from "./errors.js";
 export * from "./string.js";
 export * from "./object.js";
 export * from "./sort.js";
+export * from "./tree.js";

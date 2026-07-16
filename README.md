@@ -14,7 +14,7 @@ npm install @clementrieu/tsuit
 ## Usage
 
 ```ts
-import { chunk, slugify, pick } from "tsuit";
+import { chunk, slugify, pick } from "@clementrieu/tsuit";
 
 chunk([1, 2, 3, 4, 5], 2); // [[1, 2], [3, 4], [5]]
 slugify("Héllo, World!"); // "hello-world"
@@ -25,10 +25,11 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 
 | Module   | Functions                          |
 | -------- | ---------------------------------- |
-| `array`  | `chunk`, `distinct`, `distinctBy`, `lookupBy`, `indexBy` |
+| `array`  | `chunk`, `distinct`, `single`, `distinctBy`, `lookupBy`, `indexBy` |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
 | `object` | `pick`, `omit`, `isDefined`, `stripUndefined`           |
 | `sort`   | `compareBy`, `chainComparators`                         |
+| `tree`   | `walkTree`                                               |
 | `errors` | `DuplicateKeyError`                                     |
 
 ## Development

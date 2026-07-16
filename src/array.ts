@@ -1,4 +1,4 @@
-import { DuplicateKeyError } from "./errors.js";
+import { DuplicateKeyError, EmptyArrayError, MultipleElementsError } from "./errors.js";
 
 /**
  * Splits an array into chunks of the given size.
@@ -10,7 +10,9 @@ export function chunk<T>(
   items: readonly T[], size: number
 ): T[][] {
   
-  if (size < 1) throw new RangeError("chunk size must be >= 1");
+  if (size < 1) {
+    throw new RangeError("chunk size must be >= 1");
+  }
   
   const result: T[][] = [];
   
@@ -30,6 +32,22 @@ export function distinct<T>(items: readonly T[]): T[] {
   return [
     ...new Set(items)
   ];
+}
+
+/**
+ * Returns the only element of `items`, throwing if it does not contain exactly
+ * one:
+ * - {@link EmptyArrayError} when `items` is empty;
+ * - {@link MultipleElementsError} when `items` has more than one element.
+ */
+export function single<T>(items: readonly T[]): T {
+  if (items.length === 1) {
+    return items[0]!;
+  }
+  if (items.length === 0) {
+    throw new EmptyArrayError();
+  }
+  throw new MultipleElementsError(items.length);
 }
 
 /**
