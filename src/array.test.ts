@@ -100,7 +100,7 @@ describe("array", () => {
         }
       },
       {
-        testCase: "duplicates",
+        testCase: "duplicates (default)",
         items: [
           a, b, c, a2
         ],
@@ -113,7 +113,7 @@ describe("array", () => {
         }
       },
       {
-        testCase: "preserve duplicates",
+        testCase: "keep-first duplicates",
         items: [
           a, b, c, a2
         ],

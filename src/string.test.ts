@@ -18,6 +18,9 @@ describe("string", () => {
       expect(capitalize("")).toBe("");
     });
 
+    it("works with accents", () => {
+      expect(capitalize("é")).toBe("É");
+    });
   });
 
   describe("slugify", () => {

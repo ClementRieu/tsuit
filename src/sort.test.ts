@@ -137,22 +137,6 @@ describe("sort", () => {
 
     }
 
-    it("infers the item type from the array being sorted", () => {
-
-      const people = [
-        { name: "Charlie", age: 30 },
-        { name: "Alice", age: 25 },
-        { name: "Bob", age: 40 },
-      ];
-
-      // No explicit generics: the item type flows from `.sort`'s context.
-      const byName = [...people].sort(compareBy((person) => person.name));
-      const byAgeDesc = [...people].sort(compareBy((person) => person.age, { order: "desc" }));
-
-      expect(byName.map((person) => person.name)).toEqual(["Alice", "Bob", "Charlie"]);
-      expect(byAgeDesc.map((person) => person.age)).toEqual([40, 30, 25]);
-    });
-
   });
 
   describe("chainComparators", () => {

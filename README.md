@@ -1,13 +1,13 @@
 # tsuit
 
-A collection of small, well-typed TypeScript helper functions — zero dependencies, tree-shakeable, and ready to be published as an npm package.
+A collection of small TypeScript helper functions — zero dependencies, tree-shakeable.
 
 ## Installation
 
 Once published:
 
 ```bash
-npm install tsuit
+npm install @clementrieu/tsuit
 ```
 
 ## Usage
@@ -47,17 +47,6 @@ npm run build      # build ESM + CJS + type declarations into dist/
 
 Each module keeps its tests in a co-located `*.test.ts` file (`array.ts` →
 `array.test.ts`, etc.); vitest picks them up automatically.
-
-## Publishing
-
-The package builds to dual ESM/CJS with type declarations. To publish:
-
-```bash
-npm version patch   # bump the version
-npm publish         # runs the build via prepublishOnly
-```
-
-> Make sure the `name` in `package.json` is available on npm (or use a scoped name like `@clementrieu/tsuit`) before publishing.
 
 ## License
 

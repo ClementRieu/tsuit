@@ -7,7 +7,9 @@ const EDGE_DASHES = /^-+|-+$/g;
  * Capitalizes the first character of a string.
  */
 export function capitalize(value: string): string {
-  return value.length === 0 ? value : value[0]!.toUpperCase() + value.slice(1);
+  return value.length === 0
+    ? value
+    : value[0]!.toUpperCase() + value.slice(1);
 }
 
 /**
@@ -30,9 +32,12 @@ export function slugify(value: string): string {
  * Truncates a string to `maxLength`, appending `suffix` if it was cut.
  */
 export function truncate(value: string, maxLength: number, suffix = "…"): string {
+
   if (value.length <= maxLength) {
     return value;
   }
-  const maxTruncateLength = maxLength - suffix.length;
-  return value.slice(0, Math.max(0, maxTruncateLength)) + suffix;
+
+  const maxTruncateLength = Math.max(0, maxLength - suffix.length);
+
+  return value.slice(0, maxTruncateLength) + suffix;
 }

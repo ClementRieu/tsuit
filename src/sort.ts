@@ -29,17 +29,27 @@ export function compareBy<T, K extends string | number>(
   keyFn: (item: T) => K | null,
   options: CompareByOptions = {},
 ): (a: T, b: T) => number {
+  
   const direction = options.order === "desc" ? -1 : 1;
+  
   const nullRank = options.nulls === "first" ? -1 : 1;
 
   return (a, b) => {
+    
     const keyA = keyFn(a);
     const keyB = keyFn(b);
 
     // Null keys go first or last per `nulls`, in original order, ignoring direction.
-    if (keyA === null || keyB === null) {
-      if (keyA === null && keyB === null) return 0;
-      return keyA === null ? nullRank : -nullRank;
+    if (keyA === null && keyB === null) {
+      return 0;
+    }
+    
+    if (keyA === null) {
+      return nullRank;
+    }
+
+    if (keyB === null) {
+      return -nullRank;
     }
 
     return direction * compareKeys(keyA, keyB);
@@ -60,18 +70,27 @@ export function compareBy<T, K extends string | number>(
 export function chainComparators<T>(
   comparators: ReadonlyArray<(a: T, b: T) => number>,
 ): (a: T, b: T) => number {
+
   return (a, b) => {
+    
     for (const compare of comparators) {
+      
       const result = compare(a, b);
-      if (result !== 0) return result;
+      
+      if (result !== 0) {
+        return result;
+      }
     }
+    
     return 0;
   };
 }
 
 function compareKeys(a: string | number, b: string | number): number {
+  
   if (typeof a === "number" && typeof b === "number") {
     return a - b;
   }
+  
   return String(a).localeCompare(String(b));
 }

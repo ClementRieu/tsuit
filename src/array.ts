@@ -15,7 +15,9 @@ export function chunk<T>(
   const result: T[][] = [];
   
   for (let i = 0; i < items.length; i += size) {
-    result.push(items.slice(i, i + size));
+    result.push(
+      items.slice(i, i + size)
+    );
   }
   
   return result;
@@ -25,7 +27,9 @@ export function chunk<T>(
  * Returns a new array with duplicate values removed, preserving order.
  */
 export function distinct<T>(items: readonly T[]): T[] {
-  return [...new Set(items)];
+  return [
+    ...new Set(items)
+  ];
 }
 
 /**
@@ -41,7 +45,9 @@ export function lookupBy<T, K extends PropertyKey>(
   const result = Object.create(null) as Record<K, T[]>;
 
   for (const item of items) {
+    
     const key = keyFn(item);
+    
     (result[key] ??= []).push(item);
   }
 
@@ -80,14 +86,23 @@ export function indexBy<T, K extends PropertyKey>(
 
     const key = keyFn(item);
 
-    if (onDuplicate !== "keep-last" && Object.hasOwn(result, key)) {
-      if (onDuplicate === "throw") {
-        throw new DuplicateKeyError(key);
-      }
-      continue; // "keep-first": ignore this duplicate.
+    if (onDuplicate === "keep-last") {
+      // we write no matter what
+      result[key] = item;
+      continue;
     }
 
-    result[key] = item;
+    const keyExist = Object.hasOwn(result, key);
+
+    if (!keyExist) {
+      // we write only new keys
+      result[key] = item;
+      continue;
+    }
+
+    if (onDuplicate === "throw") {
+      throw new DuplicateKeyError(key);
+    }
   }
 
   return result;
@@ -123,7 +138,9 @@ export function distinctBy<T, K>(
   const result: T[] = [];
   
   for (const item of items) {
+    
     const key = keyFn(item);
+    
     const position = positionByKey.get(key);
     
     if (position === undefined) {
@@ -136,5 +153,6 @@ export function distinctBy<T, K>(
       result[position] = item; // keep-last: overwrite in place, same position.
     }
   }
+
   return result;
 }
