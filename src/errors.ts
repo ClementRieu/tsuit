@@ -1,6 +1,6 @@
 /**
  * Thrown when a duplicate key is encountered where uniqueness is required
- * (e.g. `indexBy` with `{ duplicateThrows: true }`).
+ * (e.g. `indexBy` with `{ onDuplicate: "throw" }`).
  */
 export class DuplicateKeyError extends Error {
   constructor(public readonly key: PropertyKey) {
