@@ -137,6 +137,22 @@ describe("sort", () => {
 
     }
 
+    it("uses the locale option to compare string keys deterministically", () => {
+
+      // In Swedish, 'ä' sorts after 'z'; in English it sorts near 'a'. The
+      // locale option must drive the difference regardless of the runtime default.
+      const items = [
+        { id: 1, key: "ä" },
+        { id: 2, key: "z" },
+      ];
+
+      const en = [...items].sort(compareBy((item) => item.key, { locale: "en" }));
+      expect(en.map((item) => item.id)).toEqual([1, 2]);
+
+      const sv = [...items].sort(compareBy((item) => item.key, { locale: "sv" }));
+      expect(sv.map((item) => item.id)).toEqual([2, 1]);
+    });
+
   });
 
   describe("chainComparators", () => {

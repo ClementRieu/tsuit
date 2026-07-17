@@ -9,12 +9,37 @@ export interface CompareByOptions {
    * relative order among themselves. Defaults to `"last"`.
    */
   nulls?: "first" | "last";
+  /**
+   * BCP 47 locale used to compare string keys (via {@link Intl.Collator}), so
+   * the order is deterministic instead of depending on the runtime's default
+   * locale. Defaults to `"en"`. Collators are cached per locale; keep the set
+   * of locales small — if the locale is itself a business variable, build your
+   * own comparator rather than churning this cache.
+   */
+  locale?: string;
+}
+
+// Collators are relatively expensive to build, so reuse one per locale. The
+// default "en" lands here on first use like any other locale.
+const collatorCache = new Map<string, Intl.Collator>();
+
+function getCollator(locale: string): Intl.Collator {
+
+  let collator = collatorCache.get(locale);
+
+  if (collator === undefined) {
+    collator = new Intl.Collator(locale, { sensitivity: "variant" });
+    collatorCache.set(locale, collator);
+  }
+
+  return collator;
 }
 
 /**
  * Builds a comparator for `Array.prototype.sort` that orders items by the key
  * returned from `keyFn`:
- * - string keys are compared alphabetically (locale-aware, via `localeCompare`);
+ * - string keys are compared alphabetically (locale-aware, via `Intl.Collator`,
+ *   defaulting to the `"en"` locale — see `options.locale`);
  * - number keys are compared numerically;
  * - items whose key is `null` sort to the end by default (`nulls: "first"`
  *   moves them to the front), keeping their relative order, unaffected by the
@@ -31,8 +56,10 @@ export function compareBy<T, K extends string | number>(
 ): (a: T, b: T) => number {
   
   const direction = options.order === "desc" ? -1 : 1;
-  
+
   const nullRank = options.nulls === "first" ? -1 : 1;
+
+  const collator = getCollator(options.locale ?? "en");
 
   return (a, b) => {
     
@@ -52,7 +79,7 @@ export function compareBy<T, K extends string | number>(
       return -nullRank;
     }
 
-    return direction * compareKeys(keyA, keyB);
+    return direction * compareKeys(keyA, keyB, collator);
   };
 }
 
@@ -86,11 +113,15 @@ export function chainComparators<T>(
   };
 }
 
-function compareKeys(a: string | number, b: string | number): number {
-  
+function compareKeys(
+  a: string | number,
+  b: string | number,
+  collator: Intl.Collator,
+): number {
+
   if (typeof a === "number" && typeof b === "number") {
     return a - b;
   }
-  
-  return String(a).localeCompare(String(b));
+
+  return collator.compare(String(a), String(b));
 }

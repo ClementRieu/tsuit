@@ -14,6 +14,18 @@ describe("object", () => {
       expect(result).toEqual(expected);
     });
 
+    it("ignores inherited keys, copying only own properties", () => {
+
+      const proto = { inherited: 1 };
+      const obj = Object.create(proto) as { inherited: number; own: number };
+      obj.own = 2;
+
+      const result = pick(obj, ["own", "inherited"]);
+
+      expect(result).toEqual({ own: 2 });
+      expect(Object.hasOwn(result, "inherited")).toBe(false);
+    });
+
   });
 
   describe("omit", () => {

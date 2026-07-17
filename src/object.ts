@@ -9,7 +9,7 @@ export function pick<T extends object, K extends keyof T>(
   const result = {} as Pick<T, K>;
   
   for (const key of keys) {
-    if (key in obj) {
+    if (Object.hasOwn(obj, key)) {
       result[key] = obj[key];
     }
   }

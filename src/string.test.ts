@@ -51,6 +51,10 @@ describe("string", () => {
       expect(truncate("hi", 8)).toBe("hi");
     });
 
+    it("throws RangeError when the suffix is longer than maxLength", () => {
+      expect(() => truncate("hello", 2, "...")).toThrow(RangeError);
+    });
+
   });
 
 });
