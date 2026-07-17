@@ -4,7 +4,9 @@ import {
   lookupBy,
   distinct,
   distinctBy,
+  first,
   indexBy,
+  last,
   single,
   type IndexByOptions,
   type DistinctByOptions,
@@ -60,6 +62,30 @@ describe("array", () => {
 
     it("throws MultipleElementsError when there is more than one element", () => {
       expect(() => single([1, 2])).toThrow(MultipleElementsError);
+    });
+
+  });
+
+  describe("first", () => {
+
+    it("returns the first element", () => {
+      expect(first([1, 2, 3])).toBe(1);
+    });
+
+    it("throws EmptyArrayError when the array is empty", () => {
+      expect(() => first([])).toThrow(EmptyArrayError);
+    });
+
+  });
+
+  describe("last", () => {
+
+    it("returns the last element", () => {
+      expect(last([1, 2, 3])).toBe(3);
+    });
+
+    it("throws EmptyArrayError when the array is empty", () => {
+      expect(() => last([])).toThrow(EmptyArrayError);
     });
 
   });

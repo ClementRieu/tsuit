@@ -59,6 +59,28 @@ export function single<T>(items: readonly T[]): T {
 }
 
 /**
+ * Returns the first element of `items`, throwing {@link EmptyArrayError} when it
+ * is empty.
+ */
+export function first<T>(items: readonly T[]): T {
+  if (items.length === 0) {
+    throw new EmptyArrayError("Cannot read the first element of an empty array");
+  }
+  return items[0]!;
+}
+
+/**
+ * Returns the last element of `items`, throwing {@link EmptyArrayError} when it
+ * is empty.
+ */
+export function last<T>(items: readonly T[]): T {
+  if (items.length === 0) {
+    throw new EmptyArrayError("Cannot read the last element of an empty array");
+  }
+  return items[items.length - 1]!;
+}
+
+/**
  * Groups array items by the key returned from `keyFn`.
  */
 export function lookupBy<T, K extends PropertyKey>(
