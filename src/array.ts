@@ -1,4 +1,9 @@
-import { DuplicateKeyError, EmptyArrayError, MultipleElementsError } from "./errors.js";
+import {
+  ArrayRangeError,
+  DuplicateKeyError,
+  EmptyArrayError,
+  MultipleElementsError,
+} from "./errors.js";
 
 /**
  * Splits an array into chunks of the given size.
@@ -11,7 +16,7 @@ export function chunk<T>(
 ): T[][] {
   
   if (size < 1) {
-    throw new RangeError("chunk size must be >= 1");
+    throw new ArrayRangeError("chunk size must be >= 1");
   }
   
   const result: T[][] = [];
@@ -45,9 +50,12 @@ export function single<T>(items: readonly T[]): T {
     return items[0]!;
   }
   if (items.length === 0) {
-    throw new EmptyArrayError();
+    throw new EmptyArrayError("Expected exactly one element, but the array was empty");
   }
-  throw new MultipleElementsError(items.length);
+  throw new MultipleElementsError(
+    `Expected exactly one element, but the array had ${items.length}`,
+    items.length,
+  );
 }
 
 /**
@@ -119,7 +127,7 @@ export function indexBy<T, K extends PropertyKey>(
     }
 
     if (onDuplicate === "throw") {
-      throw new DuplicateKeyError(key);
+      throw new DuplicateKeyError(`Duplicate on key '${key.toString()}'`, key);
     }
   }
 

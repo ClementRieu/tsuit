@@ -30,7 +30,7 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 | `object` | `pick`, `omit`, `isDefined`, `stripUndefined`           |
 | `sort`   | `compareBy`, `chainComparators`                         |
 | `tree`   | `walkTree`                                               |
-| `errors` | `DuplicateKeyError`, `EmptyArrayError`, `MultipleElementsError` |
+| `errors` | `TsuitError` (base), `DuplicateKeyError`, `EmptyArrayError`, `MultipleElementsError`, `ArrayRangeError`, `StringRangeError`, `ErrorCode`, `isTsuitError`, `AnyTsuitError` |
 
 ## Development
 

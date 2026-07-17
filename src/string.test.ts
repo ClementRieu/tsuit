@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { capitalize, slugify, truncate } from "./string.js";
+import { StringRangeError } from "./errors.js";
 
 describe("string", () => {
 
@@ -51,8 +52,8 @@ describe("string", () => {
       expect(truncate("hi", 8)).toBe("hi");
     });
 
-    it("throws RangeError when the suffix is longer than maxLength", () => {
-      expect(() => truncate("hello", 2, "...")).toThrow(RangeError);
+    it("throws StringRangeError when the suffix is longer than maxLength", () => {
+      expect(() => truncate("hello", 2, "...")).toThrow(StringRangeError);
     });
 
   });

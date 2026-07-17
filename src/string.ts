@@ -1,3 +1,5 @@
+import { StringRangeError } from "./errors.js";
+
 // Matches combining diacritical marks (U+0300–U+036F) left after NFKD normalization.
 const COMBINING_MARKS = /[̀-ͯ]/g;
 const NON_ALNUM = /[^a-z0-9]+/g;
@@ -32,13 +34,13 @@ export function slugify(value: string): string {
  * Truncates a string to `maxLength`, appending `suffix` if it was cut. The
  * result is never longer than `maxLength`.
  *
- * @throws {RangeError} if `suffix` is longer than `maxLength` — the suffix
+ * @throws {StringRangeError} if `suffix` is longer than `maxLength` — the suffix
  * alone would already exceed the budget, so no truncation could satisfy it.
  */
 export function truncate(value: string, maxLength: number, suffix = "…"): string {
 
   if (suffix.length > maxLength) {
-    throw new RangeError("truncate suffix must not be longer than maxLength");
+    throw new StringRangeError("truncate suffix must not be longer than maxLength");
   }
 
   if (value.length <= maxLength) {

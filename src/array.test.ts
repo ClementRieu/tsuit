@@ -9,7 +9,12 @@ import {
   type IndexByOptions,
   type DistinctByOptions,
 } from "./array.js";
-import { DuplicateKeyError, EmptyArrayError, MultipleElementsError } from "./errors.js";
+import {
+  ArrayRangeError,
+  DuplicateKeyError,
+  EmptyArrayError,
+  MultipleElementsError,
+} from "./errors.js";
 
 describe("array", () => {
 
@@ -25,7 +30,7 @@ describe("array", () => {
     });
 
     it("rejects invalid sizes", () => {
-      expect(() => chunk([1], 0)).toThrow(RangeError);
+      expect(() => chunk([1], 0)).toThrow(ArrayRangeError);
     });
 
   });
