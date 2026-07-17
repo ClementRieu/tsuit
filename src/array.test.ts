@@ -109,6 +109,28 @@ describe("array", () => {
 
   });
 
+  describe("lookupBy prototype safety", () => {
+
+    it("handles a __proto__ key as data and returns a normal object", () => {
+      // keyFn returns "__proto__": the accumulator must store it as data, not
+      // hit the proto setter, and the result must be a normal object.
+      const result = lookupBy(["a", "b"], () => "__proto__" as const);
+
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect(result["__proto__"]).toEqual(["a", "b"]);
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    });
+
+    it("does not treat inherited keys as pre-existing buckets", () => {
+      // "toString" exists on Object.prototype; on a naive {} the `??=` read would
+      // see the inherited method and never initialise the bucket.
+      const result = lookupBy(["x"], () => "toString" as const);
+
+      expect(result["toString"]).toEqual(["x"]);
+    });
+
+  });
+
   describe("indexBy", () => {
 
     const getKey = (item: { v: string }) => item.v
@@ -206,6 +228,28 @@ describe("array", () => {
 
         expect(getResult).toThrow(DuplicateKeyError);
       });
+
+  });
+
+  describe("indexBy prototype safety", () => {
+
+    it("handles a __proto__ key as data and returns a normal object", () => {
+      const result = indexBy([{ v: 1 }], () => "__proto__" as const);
+
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect(result["__proto__"]).toEqual({ v: 1 });
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    });
+
+    it("detects duplicates on an inherited-looking key via hasOwn", () => {
+      const getResult = () => indexBy(
+        [{ v: 1 }, { v: 2 }],
+        () => "toString" as const,
+        { onDuplicate: "throw" },
+      );
+
+      expect(getResult).toThrow(DuplicateKeyError);
+    });
 
   });
 

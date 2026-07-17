@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isDefined, omit, pick, stripUndefined } from "./object.js";
+import { isDefined, mapValues, omit, pick, stripUndefined } from "./object.js";
 
 describe("object", () => {
 
@@ -54,6 +54,38 @@ describe("object", () => {
 
   });
 
+  describe("mapValues", () => {
+
+    it("maps each value while keeping the keys", () => {
+
+      const result = mapValues({ a: 1, b: 2 }, (n) => n * 10);
+
+      const expected = { a: 10, b: 20 };
+
+      expect(result).toEqual(expected);
+    });
+
+    it("passes the key to the callback", () => {
+
+      const result = mapValues({ a: 1, b: 2 }, (n, key) => `${key}${n}`);
+
+      const expected = { a: "a1", b: "b2" };
+
+      expect(result).toEqual(expected);
+    });
+
+    it("returns a new object without mutating the input", () => {
+
+      const input = { a: 1 };
+
+      const result = mapValues(input, (n) => n + 1);
+
+      expect(result).not.toBe(input);
+      expect(input).toEqual({ a: 1 });
+    });
+
+  });
+
   describe("stripUndefined", () => {
 
     it("removes keys whose value is undefined but keeps null", () => {
@@ -70,6 +102,49 @@ describe("object", () => {
       const result = stripUndefined({ a: 1 });
 
       expect(Object.keys(result)).toEqual(["a"]);
+    });
+
+  });
+
+  describe("prototype safety", () => {
+
+    // An own, enumerable "__proto__" data property — as produced by JSON.parse or
+    // a computed key. This is the key a naive `{}` + assignment would mishandle
+    // (the proto setter would drop it or corrupt the result's prototype).
+    const withMagicKey = () => ({ ["__proto__"]: 1, keep: 2 } as Record<string, number>);
+
+    it("input carrying __proto__ as data is set up correctly (sanity)", () => {
+      const obj = withMagicKey();
+      expect(Object.hasOwn(obj, "__proto__")).toBe(true);
+      expect(Object.getPrototypeOf(obj)).toBe(Object.prototype);
+    });
+
+    it("pick preserves it as data and returns a normal object", () => {
+      const result = pick(withMagicKey(), ["__proto__", "keep"]);
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect(result["__proto__"]).toBe(1);
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    });
+
+    it("omit preserves it as data and returns a normal object", () => {
+      const result = omit(withMagicKey(), ["keep"]);
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect((result as Record<string, number>)["__proto__"]).toBe(1);
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    });
+
+    it("stripUndefined preserves it as data and returns a normal object", () => {
+      const result = stripUndefined(withMagicKey());
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect((result as Record<string, number>)["__proto__"]).toBe(1);
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    });
+
+    it("mapValues transforms it as data and returns a normal object", () => {
+      const result = mapValues(withMagicKey(), (n) => n * 10);
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect(result["__proto__"]).toBe(10);
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
     });
 
   });

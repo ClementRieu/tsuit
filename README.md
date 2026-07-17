@@ -27,7 +27,7 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 | -------- | ---------------------------------- |
 | `array`  | `chunk`, `distinct`, `single`, `first`, `last`, `distinctBy`, `lookupBy`, `indexBy` |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
-| `object` | `pick`, `omit`, `isDefined`, `stripUndefined`           |
+| `object` | `pick`, `omit`, `mapValues`, `isDefined`, `stripUndefined` |
 | `sort`   | `compareBy`, `chainComparators`                         |
 | `tree`   | `walkTree`                                               |
 | `errors` | `TsuitError` (base), `DuplicateKeyError`, `EmptyArrayError`, `MultipleElementsError`, `ArrayRangeError`, `StringRangeError`, `ErrorCode`, `isTsuitError`, `AnyTsuitError` |

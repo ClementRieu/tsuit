@@ -5,16 +5,18 @@ export function pick<T extends object, K extends keyof T>(
   obj: T,
   keys: readonly K[],
 ): Pick<T, K> {
-  
-  const result = {} as Pick<T, K>;
-  
+
+  // Null-proto while building (safe writes even for "__proto__"); the spread on
+  // return hands back a normal Object.prototype object.
+  const result = Object.create(null) as Pick<T, K>;
+
   for (const key of keys) {
     if (Object.hasOwn(obj, key)) {
       result[key] = obj[key];
     }
   }
-  
-  return result;
+
+  return { ...result };
 }
 
 /**
@@ -24,19 +26,21 @@ export function omit<T extends object, K extends keyof T>(
   obj: T,
   keys: readonly K[],
 ): Omit<T, K> {
-  
+
   const exclude = new Set<PropertyKey>(keys);
-  
-  const result = {} as Record<PropertyKey, unknown>;
-  
+
+  // Null-proto while building (safe writes even for "__proto__"); the spread on
+  // return hands back a normal Object.prototype object.
+  const result = Object.create(null) as Record<PropertyKey, unknown>;
+
   for (const key of Object.keys(obj) as (keyof T)[]) {
-    
+
     if (!exclude.has(key)) {
       result[key] = obj[key];
     }
   }
-  
-  return result as Omit<T, K>;
+
+  return { ...result } as Omit<T, K>;
 }
 
 /**
@@ -68,7 +72,9 @@ export type WithoutUndefined<T> =
  */
 export function stripUndefined<T extends object>(obj: T): WithoutUndefined<T> {
 
-  const result = {} as Record<PropertyKey, unknown>;
+  // Null-proto while building (safe writes even for "__proto__"); the spread on
+  // return hands back a normal Object.prototype object.
+  const result = Object.create(null) as Record<PropertyKey, unknown>;
 
   for (const key of Object.keys(obj) as (keyof T)[]) {
     if (obj[key] !== undefined) {
@@ -76,5 +82,28 @@ export function stripUndefined<T extends object>(obj: T): WithoutUndefined<T> {
     }
   }
 
-  return result as WithoutUndefined<T>;
+  return { ...result } as WithoutUndefined<T>;
+}
+
+/**
+ * Returns a new object with the same keys as `obj`, each value replaced by the
+ * result of `fn`. Own enumerable keys only; the original is not mutated.
+ *
+ * @example
+ * mapValues({ a: 1, b: 2 }, (n) => n * 10); // { a: 10, b: 20 }
+ */
+export function mapValues<T extends object, R>(
+  obj: T,
+  fn: (value: T[keyof T], key: keyof T) => R,
+): { [K in keyof T]: R } {
+
+  // Null-proto while building (safe writes even for "__proto__"); the spread on
+  // return hands back a normal Object.prototype object.
+  const result = Object.create(null) as { [K in keyof T]: R };
+
+  for (const key of Object.keys(obj) as (keyof T)[]) {
+    result[key] = fn(obj[key], key);
+  }
+
+  return { ...result };
 }

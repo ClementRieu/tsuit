@@ -88,18 +88,19 @@ export function lookupBy<T, K extends PropertyKey>(
   keyFn: (item: T) => K,
 ): Record<K, T[]> {
 
-  // Null-prototype object so keys like "toString" or "__proto__" behave as
-  // plain data entries instead of hitting inherited members / the proto setter.
+  // Null-proto accumulator so keys like "toString"/"__proto__" stay plain data
+  // (reads don't hit inherited members, writes don't trigger the proto setter);
+  // the spread on return hands back a normal Object.prototype object.
   const result = Object.create(null) as Record<K, T[]>;
 
   for (const item of items) {
-    
+
     const key = keyFn(item);
-    
+
     (result[key] ??= []).push(item);
   }
 
-  return result;
+  return { ...result };
 }
 
 
@@ -126,8 +127,9 @@ export function indexBy<T, K extends PropertyKey>(
 
   const { onDuplicate = "keep-last" } = options;
 
-  // Null-prototype object so keys like "toString" or "__proto__" behave as
-  // plain data entries instead of hitting inherited members / the proto setter.
+  // Null-proto accumulator so keys like "toString"/"__proto__" stay plain data
+  // (reads don't hit inherited members, writes don't trigger the proto setter);
+  // the spread on return hands back a normal Object.prototype object.
   const result = Object.create(null) as Record<K, T>;
 
   for (const item of items) {
@@ -153,7 +155,7 @@ export function indexBy<T, K extends PropertyKey>(
     }
   }
 
-  return result;
+  return { ...result };
 }
 
 export interface DistinctByOptions {
