@@ -3,6 +3,13 @@
 A collection of small TypeScript helper functions — zero dependencies, tree-shakeable.
 Claude helped a lot, meaning you all did.
 
+> [!WARNING]
+> **Pre-1.0 — expect frequent breaking changes.** The API is still being shaped
+> and may change in any release while the version stays below `1.0.0`. Following
+> SemVer's 0.x convention, breaking changes bump the **minor** version
+> (`0.1.x → 0.2.0`) and compatible fixes bump the **patch** version. Pin an exact
+> version (or a `~0.1.x` range) if you need stability.
+
 ## Installation
 
 Once published:
