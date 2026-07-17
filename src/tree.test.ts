@@ -24,8 +24,6 @@ const tree: Node = {
 
 const getChildren = (node: Node) => node.children ?? [];
 
-const ids = (nodes: Node[]) => nodes.map((node) => node.id);
-
 describe("tree", () => {
 
   describe("walkTree", () => {
@@ -67,24 +65,33 @@ describe("tree", () => {
       expect(seen).toEqual([99]);
     });
 
-    it("provides depth, parent, index and path for each node", () => {
-      
+    it("provides node, depth, parent context and index for each node", () => {
+
       const contexts = new Map<number, WalkContext<Node>>();
-      
+
       walkTree(tree, getChildren, (node, visitChildren, ctx) => {
         contexts.set(node.id, ctx);
         visitChildren();
       });
 
       expect(contexts.get(1)).toMatchObject({ depth: 0, parent: null, index: 0 });
+      expect(contexts.get(1)!.node.id).toBe(1);
       expect(contexts.get(3)).toMatchObject({ depth: 1, index: 1 });
-      expect(contexts.get(3)!.parent?.id).toBe(1);
+      expect(contexts.get(3)!.parent?.node.id).toBe(1);
 
       const ctx4 = contexts.get(4)!;
+      expect(ctx4.node.id).toBe(4);
       expect(ctx4.depth).toBe(2);
-      expect(ctx4.parent?.id).toBe(2);
+      expect(ctx4.parent?.node.id).toBe(2);
       expect(ctx4.index).toBe(0);
-      expect(ids(ctx4.path as Node[])).toEqual([1, 2]);
+
+      // Walk the parent chain to reconstruct the ancestors (root → parent).
+      const ancestors: number[] = [];
+      for (let c = ctx4.parent; c !== null; c = c.parent) {
+        ancestors.push(c.node.id);
+      }
+      ancestors.reverse();
+      expect(ancestors).toEqual([1, 2]);
     });
 
     it("prunes a subtree when visitChildren is not called", () => {

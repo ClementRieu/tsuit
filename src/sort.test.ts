@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareBy, chainComparators, type CompareByOptions } from "./sort.js";
+import { compareBy, chainComparators, sortBy, type CompareByOptions } from "./sort.js";
 
 describe("sort", () => {
 
@@ -151,6 +151,43 @@ describe("sort", () => {
 
       const sv = [...items].sort(compareBy((item) => item.key, { locale: "sv" }));
       expect(sv.map((item) => item.id)).toEqual([2, 1]);
+    });
+
+  });
+
+  describe("sortBy", () => {
+
+    it("returns a new sorted array without mutating the input", () => {
+
+      const items = [3, 1, 2];
+
+      const result = sortBy(items, (n) => n);
+
+      expect(result).toEqual([1, 2, 3]);
+      expect(items).toEqual([3, 1, 2]); // input untouched
+    });
+
+    it("evaluates keyFn exactly once per item", () => {
+
+      const items = [3, 1, 2, 5, 4];
+
+      let calls = 0;
+      sortBy(items, (n) => {
+        calls++;
+        return n;
+      });
+
+      expect(calls).toBe(items.length);
+    });
+
+    it("honors order and nulls options like compareBy", () => {
+
+      const items = [{ k: "b" }, { k: null }, { k: "a" }] as Array<{ k: string | null }>;
+
+      const result = sortBy(items, (item) => item.k, { order: "desc", nulls: "first" });
+
+      // nulls first (ignoring direction), then "b" before "a" (desc).
+      expect(result.map((item) => item.k)).toEqual([null, "b", "a"]);
     });
 
   });

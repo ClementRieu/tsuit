@@ -1,10 +1,13 @@
 export interface WalkContext<T> {
+  /** The node this context describes. */
+  readonly node: T;
+  /**
+   * The parent's context, or `null` for a root node. Walk this chain
+   * (`ctx.parent`, `ctx.parent.parent`, …) to reach any ancestor.
+   */
+  readonly parent: WalkContext<T> | null;
   /** Distance from the root: 0 for a root node, 1 for its children, etc. */
   readonly depth: number;
-  /** The node's parent, or `null` for a root node. */
-  readonly parent: T | null;
-  /** Ancestors from the root down to (and including) the parent. */
-  readonly path: readonly T[];
   /** The node's position among its siblings (or among the roots). */
   readonly index: number;
 }
@@ -67,28 +70,26 @@ export function walkTree<T, R = void>(
 
   const visitNode = (
     node: T,
+    parent: WalkContext<T> | null,
     depth: number,
-    parent: T | null,
-    path: readonly T[],
     index: number,
   ): R => {
 
-    const ctx: WalkContext<T> = { depth, parent, path, index };
+    const ctx: WalkContext<T> = { node, parent, depth, index };
 
     // Lazily recurse: only descends when the caller invokes it, and hands back
     // the children's `visit` results for the parent to combine.
     const visitChildren = (): R[] => {
-      
+
       const children = getChildren(node, ctx) ?? [];
-      
-      const childPath = [...path, node];
-      
+
       const results: R[] = [];
-      
+
       for (let i = 0; i < children.length; i++) {
-        results.push(visitNode(children[i]!, depth + 1, node, childPath, i));
+        // `ctx` is the children's parent context — the ancestor chain links here.
+        results.push(visitNode(children[i]!, ctx, depth + 1, i));
       }
-      
+
       return results;
     };
 
@@ -101,6 +102,6 @@ export function walkTree<T, R = void>(
 
   return rootList
     .map(
-      (node, index) => visitNode(node, 0, null, [], index)
+      (node, index) => visitNode(node, null, 0, index)
     );
 }

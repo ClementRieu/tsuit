@@ -84,6 +84,41 @@ export function compareBy<T, K extends string | number>(
 }
 
 /**
+ * Sorts `items` by the key from `keyFn`, returning a **new** array (the input is
+ * not mutated). Same ordering options as {@link compareBy} (`order`, `nulls`,
+ * `locale`).
+ *
+ * Performance: `keyFn` runs **once per item** (O(n)) instead of on every
+ * comparison. `items.sort(compareBy(keyFn))` re-derives the key inside each
+ * comparison — O(n log n) calls — so prefer `sortBy` when `keyFn` is non-trivial
+ * (derivation, parsing, formatting, allocation). For a cheap property access the
+ * difference is negligible and either form is fine.
+ *
+ * For multi-key / tie-breaking sorts, compose comparators with
+ * {@link chainComparators} instead.
+ *
+ * @example
+ * sortBy(users, (user) => user.name);
+ * sortBy(scores, (score) => score.value, { order: "desc", nulls: "first" });
+ */
+export function sortBy<T, K extends string | number>(
+  items: readonly T[],
+  keyFn: (item: T) => K | null,
+  options: CompareByOptions = {},
+): T[] {
+
+  // Decorate: compute each key exactly once, so the sort below never re-runs the
+  // (possibly expensive) `keyFn`.
+  const decorated = items.map((item) => ({ item, key: keyFn(item) }));
+
+  // Reuse compareBy's ordering logic; here its keyFn is a trivial field read.
+  decorated.sort(compareBy((entry) => entry.key, options));
+
+  // Undecorate. `Array.prototype.sort` is stable, so equal keys keep input order.
+  return decorated.map((entry) => entry.item);
+}
+
+/**
  * Combines comparators into a single one that applies them in order, using each
  * later comparator only to break ties left by the earlier ones. The first
  * comparator is the primary sort; subsequent ones are tie-breakers.
