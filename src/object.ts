@@ -115,11 +115,22 @@ export function mapValues<T extends object, R>(
  * Keys are coerced the way object keys always are — numbers become strings — so
  * the input must be keyed by `string | number | symbol`.
  *
+ * Optimised for speed over the `"__proto__"` edge case: a key equal to
+ * `"__proto__"` is written by assignment and so is silently dropped rather than
+ * stored. Don't use this on maps whose keys come from untrusted input.
+ *
  * @example
  * mapToRecord(new Map([["a", 1], ["b", 2]])); // { a: 1, b: 2 }
  */
 export function mapToRecord<K extends PropertyKey, V>(
   map: Map<K, V>
 ): Record<K, V> {
-  return Object.fromEntries(map.entries()) as Record<K, V>;
+
+  const record = {} as Record<K, V>;
+
+  map.forEach((v, k) => {
+    record[k] = v;
+  });
+
+  return record;
 }
