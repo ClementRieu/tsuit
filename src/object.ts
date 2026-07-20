@@ -110,7 +110,7 @@ export function mapValues<T extends object, R>(
 
 /**
  * Converts a `Map` into a plain `Record` holding the same key/value pairs.
- * Handy for turning the `Map` returned by `indexBy` into an object literal.
+ * Handy for turning the `Map` returned by {@link indexBy} into an object literal.
  *
  * Keys are coerced the way object keys always are — numbers become strings — so
  * the input must be keyed by `string | number | symbol`.

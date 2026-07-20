@@ -33,7 +33,7 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 | `array`  | `chunk`, `distinct`, `single`, `first`, `last`, `distinctBy`, `groupBy`, `indexBy` |
 | `iteration`   | `doTimes`, `mapTimes`              |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
-| `object` | `pick`, `omit`, `mapValues`, `isDefined`, `stripUndefined` |
+| `object` | `pick`, `omit`, `mapValues`, `isDefined`, `stripUndefined`, `mapToRecord` |
 | `sort`   | `compareBy`, `sortBy`, `chainComparators`               |
 | `tree`   | `walkTree`                                               |
 | `errors` | `TsuitError` (base), `DuplicateKeyError`, `EmptyArrayError`, `MultipleElementsError`, `ArrayRangeError`, `StringRangeError`, `InvalidValueError`, `ErrorCode`, `isTsuitError`, `AnyTsuitError` |
