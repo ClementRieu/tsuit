@@ -5,14 +5,12 @@ Claude helped a lot, meaning you all did.
 
 > [!WARNING]
 > **Pre-1.0 — expect frequent breaking changes.** The API is still being shaped
-> and may change in any release while the version stays below `1.0.0`. Following
-> SemVer's 0.x convention, breaking changes bump the **minor** version
-> (`0.1.x → 0.2.0`) and compatible fixes bump the **patch** version. Pin an exact
-> version (or a `~0.1.x` range) if you need stability.
+> and may change in any release while the version stays below `1.0.0`.
+> Following SemVer's 0.x convention, breaking changes bump the **minor** version
+> (`0.1.x → 0.2.0`) and compatible fixes bump the **patch** version.
+> Pin an exact version (or a `~0.1.x` range) if you need stability.
 
 ## Installation
-
-Once published:
 
 ```bash
 npm install @clementrieu/tsuit
@@ -33,11 +31,12 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 | Module   | Functions                          |
 | -------- | ---------------------------------- |
 | `array`  | `chunk`, `distinct`, `single`, `first`, `last`, `distinctBy`, `lookupBy`, `indexBy` |
+| `iteration`   | `doTimes`, `mapTimes`              |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
 | `object` | `pick`, `omit`, `mapValues`, `isDefined`, `stripUndefined` |
 | `sort`   | `compareBy`, `sortBy`, `chainComparators`               |
 | `tree`   | `walkTree`                                               |
-| `errors` | `TsuitError` (base), `DuplicateKeyError`, `EmptyArrayError`, `MultipleElementsError`, `ArrayRangeError`, `StringRangeError`, `ErrorCode`, `isTsuitError`, `AnyTsuitError` |
+| `errors` | `TsuitError` (base), `DuplicateKeyError`, `EmptyArrayError`, `MultipleElementsError`, `ArrayRangeError`, `StringRangeError`, `InvalidValueError`, `ErrorCode`, `isTsuitError`, `AnyTsuitError` |
 
 ## Development
 

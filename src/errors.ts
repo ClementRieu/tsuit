@@ -18,6 +18,7 @@ export const ErrorCode = Object.freeze({
   MULTIPLE_ELEMENTS: "MULTIPLE_ELEMENTS",
   ARRAY_RANGE: "ARRAY_RANGE",
   STRING_RANGE: "STRING_RANGE",
+  INVALID_VALUE: "INVALID_VALUE"
 } as const);
 
 /** Union of every {@link ErrorCode} value, e.g. `"DUPLICATE_KEY"`. */
@@ -107,6 +108,19 @@ export class StringRangeError extends TsuitError {
 }
 
 /**
+ * Thrown when an argument holds a value outside its accepted domain (e.g.
+ * `doTimes`/`mapTimes` with a negative `times`). The caller supplies the message.
+ */
+export class InvalidValueError extends TsuitError {
+  readonly code = ErrorCode.INVALID_VALUE;
+
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidValueError";
+  }
+}
+
+/**
  * Union of every concrete error this library throws. Switch on `.code` for an
  * exhaustive, narrowing dispatch (each case exposes that error's context).
  */
@@ -115,7 +129,8 @@ export type AnyTsuitError =
   | EmptyArrayError
   | MultipleElementsError
   | ArrayRangeError
-  | StringRangeError;
+  | StringRangeError
+  | InvalidValueError;
 
 const KNOWN_CODES: ReadonlySet<string> = new Set(Object.values(ErrorCode));
 
