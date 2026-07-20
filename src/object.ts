@@ -107,3 +107,19 @@ export function mapValues<T extends object, R>(
 
   return { ...result };
 }
+
+/**
+ * Converts a `Map` into a plain `Record` holding the same key/value pairs.
+ * Handy for turning the `Map` returned by `indexBy` into an object literal.
+ *
+ * Keys are coerced the way object keys always are — numbers become strings — so
+ * the input must be keyed by `string | number | symbol`.
+ *
+ * @example
+ * mapToRecord(new Map([["a", 1], ["b", 2]])); // { a: 1, b: 2 }
+ */
+export function mapToRecord<K extends PropertyKey, V>(
+  map: Map<K, V>
+): Record<K, V> {
+  return Object.fromEntries(map.entries()) as Record<K, V>;
+}

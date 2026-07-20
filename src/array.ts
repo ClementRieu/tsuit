@@ -81,26 +81,36 @@ export function last<T>(items: readonly T[]): T {
 }
 
 /**
- * Groups array items by the key returned from `keyFn`.
+ * Groups array items into a `Map` keyed by the value returned from `keyFn`,
+ * each key mapping to the list of items that produced it, in input order. Keys
+ * may be of any type — they are matched by `Map` identity (`SameValueZero`).
+ *
+ * @example
+ * groupBy([1, 2, 3, 4], (n) => (n % 2 === 0 ? "even" : "odd"));
+ * // Map { "odd" => [1, 3], "even" => [2, 4] }
  */
-export function groupBy<T, K extends PropertyKey>(
+export function groupBy<T, K>(
   items: readonly T[],
   keyFn: (item: T) => K,
-): Record<K, T[]> {
+): Map<K, T[]> {
 
-  // Null-proto accumulator so keys like "toString"/"__proto__" stay plain data
-  // (reads don't hit inherited members, writes don't trigger the proto setter);
-  // the spread on return hands back a normal Object.prototype object.
-  const result = Object.create(null) as Record<K, T[]>;
+  const result = new Map<K, T[]>();
 
   for (const item of items) {
 
     const key = keyFn(item);
 
-    (result[key] ??= []).push(item);
+    let bucket = result.get(key);
+
+    if (bucket === undefined) {
+      bucket = [];
+      result.set(key, bucket);
+    }
+
+    bucket.push(item);
   }
 
-  return { ...result };
+  return result;
 }
 
 
@@ -115,22 +125,28 @@ export interface IndexByOptions {
 }
 
 /**
- * Indexes array items by the key returned from `keyFn`, mapping each key to a
- * single item. Unlike `groupBy`, which keeps every item sharing a key, this
- * keeps only one; use `onDuplicate` to choose which when keys collide.
+ * Indexes array items into a `Map` keyed by the value returned from `keyFn`,
+ * mapping each key to a single item. Unlike {@link groupBy}, which keeps every
+ * item sharing a key, this keeps only one; use `onDuplicate` to choose which
+ * when keys collide. Keys may be of any type — they are matched by `Map`
+ * identity (`SameValueZero`).
+ *
+ * When keys are property keys (`string | number | symbol`), pass the result to
+ * {@link mapToRecord} to get a plain `Record` instead.
+ *
+ * @example
+ * indexBy([{ id: "a" }, { id: "b" }], (item) => item.id);
+ * // Map { "a" => { id: "a" }, "b" => { id: "b" } }
  */
-export function indexBy<T, K extends PropertyKey>(
+export function indexBy<T, K>(
   items: readonly T[],
   keyFn: (item: T) => K,
   options: IndexByOptions = {},
-): Record<K, T> {
+): Map<K, T> {
 
   const { onDuplicate = "keep-last" } = options;
 
-  // Null-proto accumulator so keys like "toString"/"__proto__" stay plain data
-  // (reads don't hit inherited members, writes don't trigger the proto setter);
-  // the spread on return hands back a normal Object.prototype object.
-  const result = Object.create(null) as Record<K, T>;
+  const result = new Map<K, T>();
 
   for (const item of items) {
 
@@ -138,24 +154,22 @@ export function indexBy<T, K extends PropertyKey>(
 
     if (onDuplicate === "keep-last") {
       // we write no matter what
-      result[key] = item;
+      result.set(key, item);
       continue;
     }
 
-    const keyExist = Object.hasOwn(result, key);
-
-    if (!keyExist) {
+    if (!result.has(key)) {
       // we write only new keys
-      result[key] = item;
+      result.set(key, item);
       continue;
     }
 
     if (onDuplicate === "throw") {
-      throw new DuplicateKeyError(`Duplicate on key '${key.toString()}'`, key);
+      throw new DuplicateKeyError(`Duplicate on key '${String(key)}'`, key);
     }
   }
 
-  return { ...result };
+  return result;
 }
 
 export interface DistinctByOptions {

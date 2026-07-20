@@ -52,7 +52,7 @@ export abstract class TsuitError extends Error {
 export class DuplicateKeyError extends TsuitError {
   readonly code = ErrorCode.DUPLICATE_KEY;
 
-  constructor(message: string, public readonly key: PropertyKey) {
+  constructor(message: string, public readonly key: unknown) {
     super(message);
     this.name = "DuplicateKeyError";
   }

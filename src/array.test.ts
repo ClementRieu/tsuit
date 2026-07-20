@@ -99,34 +99,26 @@ describe("array", () => {
         (n) => (n % 2 === 0 ? "even" : "odd")
       );
 
-      const expected = {
-        odd: [1, 3],
-        even: [2, 4],
-      };
+      const expected = new Map([
+        ["odd", [1, 3]],
+        ["even", [2, 4]],
+      ]);
 
       expect(result).toEqual(expected);
     });
 
   });
 
-  describe("groupBy prototype safety", () => {
+  describe("groupBy arbitrary keys", () => {
 
-    it("handles a __proto__ key as data and returns a normal object", () => {
-      // keyFn returns "__proto__": the accumulator must store it as data, not
-      // hit the proto setter, and the result must be a normal object.
-      const result = groupBy(["a", "b"], () => "__proto__" as const);
+    it("supports arbitrary (non-property) key types", () => {
+      const even = { parity: "even" };
+      const odd = { parity: "odd" };
 
-      expect(Object.hasOwn(result, "__proto__")).toBe(true);
-      expect(result["__proto__"]).toEqual(["a", "b"]);
-      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
-    });
+      const result = groupBy([1, 2, 3, 4], (n) => (n % 2 === 0 ? even : odd));
 
-    it("does not treat inherited keys as pre-existing buckets", () => {
-      // "toString" exists on Object.prototype; on a naive {} the `??=` read would
-      // see the inherited method and never initialise the bucket.
-      const result = groupBy(["x"], () => "toString" as const);
-
-      expect(result["toString"]).toEqual(["x"]);
+      expect(result.get(even)).toEqual([2, 4]);
+      expect(result.get(odd)).toEqual([1, 3]);
     });
 
   });
@@ -148,11 +140,11 @@ describe("array", () => {
         ],
         getKey,
         options: {},
-        expectedResult: {
-          "a": a,
-          "b": b,
-          "c": c,
-        }
+        expectedResult: new Map([
+          ["a", a],
+          ["b", b],
+          ["c", c],
+        ])
       },
       {
         testCase: "no duplicate ignores duplicate throws",
@@ -163,11 +155,11 @@ describe("array", () => {
         options: {
           onDuplicate: "throw"
         } satisfies IndexByOptions,
-        expectedResult: {
-          "a": a,
-          "b": b,
-          "c": c,
-        }
+        expectedResult: new Map([
+          ["a", a],
+          ["b", b],
+          ["c", c],
+        ])
       },
       {
         testCase: "duplicates (default)",
@@ -176,11 +168,11 @@ describe("array", () => {
         ],
         getKey,
         options: {},
-        expectedResult: {
-          "a": a2,
-          "b": b,
-          "c": c,
-        }
+        expectedResult: new Map([
+          ["a", a2],
+          ["b", b],
+          ["c", c],
+        ])
       },
       {
         testCase: "keep-first duplicates",
@@ -191,11 +183,11 @@ describe("array", () => {
         options: {
           onDuplicate: "keep-first"
         } satisfies IndexByOptions,
-        expectedResult: {
-          "a": a,
-          "b": b,
-          "c": c,
-        }
+        expectedResult: new Map([
+          ["a", a],
+          ["b", b],
+          ["c", c],
+        ])
       }
     ]
 
@@ -231,24 +223,18 @@ describe("array", () => {
 
   });
 
-  describe("indexBy prototype safety", () => {
+  describe("indexBy arbitrary keys", () => {
 
-    it("handles a __proto__ key as data and returns a normal object", () => {
-      const result = indexBy([{ v: 1 }], () => "__proto__" as const);
+    it("supports arbitrary (non-property) key types", () => {
+      const k1 = { id: 1 };
+      const k2 = { id: 2 };
+      const a = { key: k1, v: "a" };
+      const b = { key: k2, v: "b" };
 
-      expect(Object.hasOwn(result, "__proto__")).toBe(true);
-      expect(result["__proto__"]).toEqual({ v: 1 });
-      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
-    });
+      const result = indexBy([a, b], (item) => item.key);
 
-    it("detects duplicates on an inherited-looking key via hasOwn", () => {
-      const getResult = () => indexBy(
-        [{ v: 1 }, { v: 2 }],
-        () => "toString" as const,
-        { onDuplicate: "throw" },
-      );
-
-      expect(getResult).toThrow(DuplicateKeyError);
+      expect(result.get(k1)).toBe(a);
+      expect(result.get(k2)).toBe(b);
     });
 
   });

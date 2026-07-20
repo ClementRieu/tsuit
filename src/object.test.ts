@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isDefined, mapValues, omit, pick, stripUndefined } from "./object.js";
+import { isDefined, mapToRecord, mapValues, omit, pick, stripUndefined } from "./object.js";
 
 describe("object", () => {
 
@@ -102,6 +102,26 @@ describe("object", () => {
       const result = stripUndefined({ a: 1 });
 
       expect(Object.keys(result)).toEqual(["a"]);
+    });
+
+  });
+
+  describe("mapToRecord", () => {
+
+    it("builds a record from a map's entries", () => {
+
+      const result = mapToRecord(new Map([["a", 1], ["b", 2]]));
+
+      const expected = { a: 1, b: 2 };
+
+      expect(result).toEqual(expected);
+    });
+
+    it("returns a plain object", () => {
+
+      const result = mapToRecord(new Map<string, number>());
+
+      expect(result).toEqual({});
     });
 
   });
