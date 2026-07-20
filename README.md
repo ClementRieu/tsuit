@@ -30,7 +30,7 @@ pick({ a: 1, b: 2, c: 3 }, ["a", "c"]); // { a: 1, c: 3 }
 
 | Module   | Functions                          |
 | -------- | ---------------------------------- |
-| `array`  | `chunk`, `distinct`, `single`, `first`, `last`, `distinctBy`, `lookupBy`, `indexBy` |
+| `array`  | `chunk`, `distinct`, `single`, `first`, `last`, `distinctBy`, `groupBy`, `indexBy` |
 | `iteration`   | `doTimes`, `mapTimes`              |
 | `string` | `capitalize`, `slugify`, `truncate`                     |
 | `object` | `pick`, `omit`, `mapValues`, `isDefined`, `stripUndefined` |

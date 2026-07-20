@@ -83,7 +83,7 @@ export function last<T>(items: readonly T[]): T {
 /**
  * Groups array items by the key returned from `keyFn`.
  */
-export function lookupBy<T, K extends PropertyKey>(
+export function groupBy<T, K extends PropertyKey>(
   items: readonly T[],
   keyFn: (item: T) => K,
 ): Record<K, T[]> {
@@ -116,7 +116,7 @@ export interface IndexByOptions {
 
 /**
  * Indexes array items by the key returned from `keyFn`, mapping each key to a
- * single item. Unlike `lookupBy`, which keeps every item sharing a key, this
+ * single item. Unlike `groupBy`, which keeps every item sharing a key, this
  * keeps only one; use `onDuplicate` to choose which when keys collide.
  */
 export function indexBy<T, K extends PropertyKey>(

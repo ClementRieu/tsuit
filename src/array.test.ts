@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   chunk,
-  lookupBy,
+  groupBy,
   distinct,
   distinctBy,
   first,
@@ -90,11 +90,11 @@ describe("array", () => {
 
   });
 
-  describe("lookupBy", () => {
+  describe("groupBy", () => {
 
     it("groups buckets by key", () => {
 
-      const result = lookupBy(
+      const result = groupBy(
         [1, 2, 3, 4],
         (n) => (n % 2 === 0 ? "even" : "odd")
       );
@@ -109,12 +109,12 @@ describe("array", () => {
 
   });
 
-  describe("lookupBy prototype safety", () => {
+  describe("groupBy prototype safety", () => {
 
     it("handles a __proto__ key as data and returns a normal object", () => {
       // keyFn returns "__proto__": the accumulator must store it as data, not
       // hit the proto setter, and the result must be a normal object.
-      const result = lookupBy(["a", "b"], () => "__proto__" as const);
+      const result = groupBy(["a", "b"], () => "__proto__" as const);
 
       expect(Object.hasOwn(result, "__proto__")).toBe(true);
       expect(result["__proto__"]).toEqual(["a", "b"]);
@@ -124,7 +124,7 @@ describe("array", () => {
     it("does not treat inherited keys as pre-existing buckets", () => {
       // "toString" exists on Object.prototype; on a naive {} the `??=` read would
       // see the inherited method and never initialise the bucket.
-      const result = lookupBy(["x"], () => "toString" as const);
+      const result = groupBy(["x"], () => "toString" as const);
 
       expect(result["toString"]).toEqual(["x"]);
     });

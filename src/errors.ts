@@ -8,8 +8,12 @@
  *
  * @example
  * const httpByCode = {
- *   DUPLICATE_KEY: 409, EMPTY_ARRAY: 400, MULTIPLE_ELEMENTS: 400,
- *   ARRAY_RANGE: 400, STRING_RANGE: 400,
+ *   DUPLICATE_KEY: 409,
+ *   EMPTY_ARRAY: 400,
+ *   MULTIPLE_ELEMENTS: 400,
+ *   ARRAY_RANGE: 400,
+ *   STRING_RANGE: 400,
+ *   ... // list of all other codes
  * } satisfies Record<ErrorCode, number>;
  */
 export const ErrorCode = Object.freeze({
