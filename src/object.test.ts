@@ -124,6 +124,31 @@ describe("object", () => {
       expect(result).toEqual({});
     });
 
+    it("keeps a __proto__ key as own data", () => {
+      // "__proto__" is stored as own data (via the guard), not routed through
+      // the prototype setter, and the result is a normal object.
+      const result = mapToRecord(new Map([["__proto__", 1], ["keep", 2]]));
+
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect(result["__proto__"]).toBe(1);
+      expect(result["keep"]).toBe(2);
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    });
+
+    it("does not corrupt the prototype on an object-valued __proto__", () => {
+      // Without the guard, an object value would become the result's prototype.
+      const evil = { polluted: true };
+
+      const result = mapToRecord(
+        new Map<string, unknown>([["__proto__", evil], ["keep", 2]]),
+      );
+
+      expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+      expect((result as Record<string, unknown>)["polluted"]).toBeUndefined();
+      expect(Object.hasOwn(result, "__proto__")).toBe(true);
+      expect(result["keep"]).toBe(2);
+    });
+
   });
 
   describe("prototype safety", () => {

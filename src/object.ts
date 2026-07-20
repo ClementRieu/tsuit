@@ -1,4 +1,32 @@
 /**
+ * Assigns `value` to `key` on `target` as an own, enumerable data property —
+ * safe even when `key` is `"__proto__"`, which a plain `target[key] = value`
+ * would route through the prototype setter (dropping the entry, or corrupting
+ * the prototype when the value is an object).
+ *
+ * Building on a normal `{}` and guarding only this one key keeps V8's fast
+ * properties — far faster than an `Object.create(null)` accumulator, which
+ * falls into dictionary mode. The guard is a single, well-predicted branch per
+ * key, so it costs essentially nothing.
+ */
+function assignSafe(
+  target: Record<PropertyKey, unknown>,
+  key: PropertyKey,
+  value: unknown,
+): void {
+  if (key === "__proto__") {
+    Object.defineProperty(target, key, {
+      value,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+  } else {
+    target[key] = value;
+  }
+}
+
+/**
  * Returns a new object containing only the given keys.
  */
 export function pick<T extends object, K extends keyof T>(
@@ -6,17 +34,15 @@ export function pick<T extends object, K extends keyof T>(
   keys: readonly K[],
 ): Pick<T, K> {
 
-  // Null-proto while building (safe writes even for "__proto__"); the spread on
-  // return hands back a normal Object.prototype object.
-  const result = Object.create(null) as Pick<T, K>;
+  const result = {} as Record<PropertyKey, unknown>;
 
   for (const key of keys) {
     if (Object.hasOwn(obj, key)) {
-      result[key] = obj[key];
+      assignSafe(result, key, obj[key]);
     }
   }
 
-  return { ...result };
+  return result as Pick<T, K>;
 }
 
 /**
@@ -29,18 +55,16 @@ export function omit<T extends object, K extends keyof T>(
 
   const exclude = new Set<PropertyKey>(keys);
 
-  // Null-proto while building (safe writes even for "__proto__"); the spread on
-  // return hands back a normal Object.prototype object.
-  const result = Object.create(null) as Record<PropertyKey, unknown>;
+  const result = {} as Record<PropertyKey, unknown>;
 
   for (const key of Object.keys(obj) as (keyof T)[]) {
 
     if (!exclude.has(key)) {
-      result[key] = obj[key];
+      assignSafe(result, key, obj[key]);
     }
   }
 
-  return { ...result } as Omit<T, K>;
+  return result as Omit<T, K>;
 }
 
 /**
@@ -72,17 +96,15 @@ export type WithoutUndefined<T> =
  */
 export function stripUndefined<T extends object>(obj: T): WithoutUndefined<T> {
 
-  // Null-proto while building (safe writes even for "__proto__"); the spread on
-  // return hands back a normal Object.prototype object.
-  const result = Object.create(null) as Record<PropertyKey, unknown>;
+  const result = {} as Record<PropertyKey, unknown>;
 
   for (const key of Object.keys(obj) as (keyof T)[]) {
     if (obj[key] !== undefined) {
-      result[key] = obj[key];
+      assignSafe(result, key, obj[key]);
     }
   }
 
-  return { ...result } as WithoutUndefined<T>;
+  return result as WithoutUndefined<T>;
 }
 
 /**
@@ -97,15 +119,13 @@ export function mapValues<T extends object, R>(
   fn: (value: T[keyof T], key: keyof T) => R,
 ): { [K in keyof T]: R } {
 
-  // Null-proto while building (safe writes even for "__proto__"); the spread on
-  // return hands back a normal Object.prototype object.
-  const result = Object.create(null) as { [K in keyof T]: R };
+  const result = {} as Record<PropertyKey, unknown>;
 
   for (const key of Object.keys(obj) as (keyof T)[]) {
-    result[key] = fn(obj[key], key);
+    assignSafe(result, key, fn(obj[key], key));
   }
 
-  return { ...result };
+  return result as { [K in keyof T]: R };
 }
 
 /**
@@ -115,9 +135,9 @@ export function mapValues<T extends object, R>(
  * Keys are coerced the way object keys always are — numbers become strings — so
  * the input must be keyed by `string | number | symbol`.
  *
- * Optimised for speed over the `"__proto__"` edge case: a key equal to
- * `"__proto__"` is written by assignment and so is silently dropped rather than
- * stored. Don't use this on maps whose keys come from untrusted input.
+ * Prototype-safe: a `"__proto__"` key is stored as own data (via
+ * `defineProperty`) rather than routed through the prototype setter, and the
+ * result is a normal `Object.prototype` object.
  *
  * @example
  * mapToRecord(new Map([["a", 1], ["b", 2]])); // { a: 1, b: 2 }
@@ -126,11 +146,11 @@ export function mapToRecord<K extends PropertyKey, V>(
   map: Map<K, V>
 ): Record<K, V> {
 
-  const record = {} as Record<K, V>;
+  const record = {} as Record<PropertyKey, unknown>;
 
   map.forEach((v, k) => {
-    record[k] = v;
+    assignSafe(record, k, v);
   });
 
-  return record;
+  return record as Record<K, V>;
 }
