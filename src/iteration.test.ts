@@ -17,15 +17,15 @@ describe("algo", () => {
       expect(count).toEqual(12);
     });
 
-    it("takes time as parameter", () => {
+    it("takes index and time as parameter", () => {
 
-      const push: number[] = [];
+      const indexes: number[] = [];
 
-      doTimes(12, (time) => {
-        push.push(time)
+      doTimes(12, (index) => {
+        indexes.push(index)
       });
 
-      expect(push).toEqual([1,2,3,4,5,6,7,8,9,10,11,12]);
+      expect(indexes).toEqual([0,1,2,3,4,5,6,7,8,9,10,11]);
     });
 
     it("throws on negative 'times'", () => {
@@ -47,22 +47,22 @@ describe("algo", () => {
 
       const result = mapTimes(12, (time) => time);
 
-      expect(result).toEqual([1,2,3,4,5,6,7,8,9,10,11,12]);
+      expect(result).toEqual([0,1,2,3,4,5,6,7,8,9,10,11]);
     });
 
     it("throws on NaN or infinite 'times'", () => {
-      expect(() => mapTimes(NaN, (time) => time)).toThrow(InvalidValueError);
-      expect(() => mapTimes(Infinity, (time) => time)).toThrow(InvalidValueError);
+      expect(() => mapTimes(NaN, (index) => index)).toThrow(InvalidValueError);
+      expect(() => mapTimes(Infinity, (index) => index)).toThrow(InvalidValueError);
     });
 
     it("accepts a fractional 'times', stopping below it", () => {
       // Floats are intentionally allowed: the loop runs while time <= 2.9.
-      expect(mapTimes(2.9, (time) => time)).toEqual([1, 2]);
+      expect(mapTimes(2.9, (index) => index)).toEqual([0, 1]);
     });
 
     it("throws on negative 'times'", () => {
 
-      const execute = () => mapTimes(-1, (time) => time);
+      const execute = () => mapTimes(-1, (index) => index);
 
       expect(execute).toThrow(InvalidValueError);
     });

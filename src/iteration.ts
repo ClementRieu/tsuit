@@ -5,7 +5,7 @@ import { InvalidValueError } from "./errors.js";
  * it must be finite (rejects `NaN` and `±Infinity`) and non-negative. A
  * fractional `times` is accepted — the loop simply stops below it.
  */
-function assertValidTimes(times: number): void {
+function assertAndValidTimes(times: number): void {
   if (!Number.isFinite(times)) {
     throw new InvalidValueError(`'times' must be a finite number`);
   }
@@ -29,13 +29,15 @@ function assertValidTimes(times: number): void {
  */
 export function doTimes(
   times: number,
-  execute: (time: number) => void,
+  execute: (index: number) => void,
 ): void {
 
-  assertValidTimes(times);
+  const iterations = Math.floor(times);
 
-  for (let time = 1; time <= times; time++) {
-    execute(time);
+  assertAndValidTimes(iterations);
+
+  for (let index = 0; index < iterations; index++) {
+    execute(index);
   }
 }
 
@@ -54,14 +56,18 @@ export function doTimes(
  */
 export function mapTimes<T>(
   times: number,
-  map: (time: number) => T,
+  map: (index: number) => T,
 ): T[] {
 
-  assertValidTimes(times);
+  const iterations = Math.floor(times);
+
+  assertAndValidTimes(iterations);
 
   const result: T[] = [];
-  for (let time = 1; time <= times; time++) {
-    result.push(map(time));
+
+  for (let index = 0; index < iterations; index++) {
+    result.push(map(index));
+    
   }
   return result;
 }
